@@ -47,5 +47,19 @@ class Ch02Test : Spek({
             assertFalse( isSorted(unsortedArray, {lhs, rhs -> lhs < rhs } ) )
         }
     }
+
+    describe("curry function") {
+        fun original(a: Int, b: Double): String {
+            val result = a * b
+            return "$result"
+        }
+
+        it("should curry the passed in function") {
+            val curried = curry(::original)
+            val partiallyApplied = curried(5)
+
+            assertEquals("12.5", partiallyApplied(2.5))
+        }
+    }
 })
 

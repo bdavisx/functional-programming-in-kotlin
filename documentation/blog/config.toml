@@ -1,0 +1,95 @@
+baseurl = "http://billdavis.ws/"
+title = "Bill Davis's Blog"
+languageCode = "en-us"
+
+pygmentsuseclasses = false
+PygmentsCodeFences = true
+pygmentsstyle ="default"
+
+# Shown in the side menu
+copyright = ""
+canonifyurls = true
+paginate = 25
+
+[indexes]
+  tag = "tags"
+  topic = "topics"
+
+[params]
+  # Shown in the home page
+  subtitle = ""
+  #brand = "Blackburn"
+  #googleAnalytics = "Your Google Analytics tracking ID"
+  #disqus = "Your Disqus shortname"
+  # CSS name for highlight.js
+  #highlightjs = "androidstudio"
+  dateFormat = "02 Jan 2006, 15:04"
+  # Include any custom CSS and/or JS files
+  # (relative to /static folder)
+  #custom_css = ["css/my.css"]
+  #custom_js = ["js/my.js"]
+
+[menu]
+  # Shown in the side menu.
+  [[menu.main]]
+    name = "Home"
+    pre = "<i class='fa fa-home fa-fw'></i>"
+    weight = 0
+    identifier = "home"
+    url = "/"
+  [[menu.main]]
+    name = "Posts"
+    pre = "<i class='fa fa-list fa-fw'></i>"
+    weight = 1
+    identifier = "post"
+    url = "/post/"
+  [[menu.main]]
+    name = "About"
+    pre = "<i class='fa fa-user fa-fw'></i>"
+    weight = 2
+    identifier = "about"
+    url = "/about/"
+  [[menu.main]]
+    name = "Contact"
+    pre = "<i class='fa fa-phone fa-fw'></i>"
+    weight = 3
+    url = "/contact/"
+
+[social]
+  # Link your social networking accounts to the side menu
+  # by entering your username or ID.
+
+  # SNS microblogging
+  #twitter = "*"
+  #gnusocial = "*" # Specify href (e.g. https://quitter.se/yourusername)
+  #facebook = "*"
+  #googleplus = "*"
+  #weibo = "*"
+  #tumblr = "*"
+
+  # SNS photo/video sharing
+  #instagram = "*"
+  #flickr = "*"
+  #pinterest = "*"
+  #youtube = "*"
+  #vimeo = "*"
+  #vine = "*"
+  #slideshare = "*"
+
+  # SNS career oriented
+  #linkedin = "*"
+  #xing = "*"
+
+  # SNS news
+  #reddit = "*"
+  #hackernews = "*"
+
+  # Techie
+  github = "bdavisx"
+  #bitbucket = "bdavisx"
+  #stackoverflow = "*"
+  #serverfault = "*"
+
+  # Gaming
+  #steam = "*"
+

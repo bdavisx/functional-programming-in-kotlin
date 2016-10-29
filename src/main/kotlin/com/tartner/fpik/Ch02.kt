@@ -4,7 +4,7 @@ fun fibonacci(n: Int): Int {
     tailrec fun loop(n: Int, previous: Int, current: Int): Int {
         return when(n) {
             0 -> previous
-            else -> { loop(n-1, current, previous+current) }
+            else -> loop(n-1, current, previous+current)
         }
     }
 
@@ -39,3 +39,27 @@ fun <A> isSorted(array: Array<A>, ordered: (A,A) -> Boolean): Boolean {
 
     return loop(1)
 }
+
+fun <A,B,C> curry(function: (A,B) -> C): (A) -> ((B) -> C) {
+    return fun (a: A): (B) -> C {
+        return fun (b: B): C {
+            return function(a, b)
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
