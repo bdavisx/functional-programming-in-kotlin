@@ -1,5 +1,5 @@
 +++
-title = "Exercises 2.1 (fibonacci) and 2.2 (higher order functions)"
+title = "Fibonacci and Higher Order Functions (Ex 2.1 and 2.2)"
 draft = false
 date = "2016-10-28T12:29:04-05:00"
 
