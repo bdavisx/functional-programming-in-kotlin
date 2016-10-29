@@ -9,7 +9,7 @@ import kotlin.test.assertTrue
 fun <A> isSorted(array: Array<A>, ordered: (A,A) -> Boolean): Boolean {
     tailrec fun loop(current: Int): Boolean {
         when(current) {
-            array.size -> { return true }
+            array.size -> return true
             else -> {
                 if(!ordered(array[current-1], array[current])) { return false }
 
