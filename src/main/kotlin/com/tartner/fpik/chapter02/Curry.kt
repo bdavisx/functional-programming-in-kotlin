@@ -15,16 +15,18 @@ fun <A,B,C> curry(function: (A,B) -> C): (A) -> ((B) -> C) {
 
 class CurryTest: Spek({
     describe("curry function") {
-        fun original(a: Int, b: Double): String {
-            val result = a * b
-            return "$result"
-        }
-
         it("should curry the passed in function") {
-            val curried = curry(::original)
-            val partiallyApplied = curried(5)
+            val curried: (a: Int) -> (b: Double) -> String = curry(::functionToBeCurried)
+            val partiallyAppliedWith5: (b: Double) -> String = curried(5)
+            val fullyExecuted: String = partiallyAppliedWith5(2.5)
 
-            assertEquals("12.5", partiallyApplied(2.5))
+            assertEquals("12.5", fullyExecuted)
         }
     }
 })
+
+fun functionToBeCurried(a: Int, b: Double): String {
+    val result = a * b
+    return "$result"
+}
+

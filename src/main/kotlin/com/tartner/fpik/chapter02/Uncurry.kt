@@ -11,16 +11,18 @@ fun <A,B,C> uncurry(function: (A) -> ((B) -> C)): (A,B) -> C {
     }
 }
 
+fun <A,B,C> uncurrySeparate(function: (A) -> ((B) -> C)): (A,B) -> C {
+    return fun(a: A, b: B): C {
+        val partiallyApplied = function(a)
+        return partiallyApplied(b)
+    }
+}
+
 class UncurryTest: Spek({
     describe("uncurry function") {
-        fun original(a: Int, b: Double): String {
-            val result = a * b
-            return "$result"
-        }
-
-        it("should curry the passed in function") {
-            val curried = curry(::original)
-            val uncurried = uncurry(curried)
+        it("should uncurry the passed in function") {
+            val curried: (a: Int) -> (b: Double) -> String = curry(::functionToBeCurried)
+            val uncurried: (a: Int, b: Double) -> String = uncurry(curried)
 
             assertEquals("12.5", uncurried(5, 2.5))
         }
