@@ -29,4 +29,3 @@ fun functionToBeCurried(a: Int, b: Double): String {
     val result = a * b
     return "$result"
 }
-
