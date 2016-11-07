@@ -1,4 +1,4 @@
-package com.tartner.fpik.chapter03
+package ws.billdavis.fpik.chapter03
 
 sealed class MyList<out A>
 object Nil: MyList<Nothing>()
