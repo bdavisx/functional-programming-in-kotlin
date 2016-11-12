@@ -1,9 +1,8 @@
 package ws.billdavis.fpik.chapter02
 
-import org.jetbrains.spek.api.Spek
-import org.jetbrains.spek.api.dsl.describe
-import org.jetbrains.spek.api.dsl.it
-import org.junit.Assert.assertEquals
+import io.kotlintest.KTestJUnitRunner
+import io.kotlintest.specs.ShouldSpec
+import org.junit.runner.RunWith
 
 fun <A,B,C> uncurry(function: (A) -> ((B) -> C)): (A,B) -> C {
     return fun(a: A, b: B): C {
@@ -18,13 +17,16 @@ fun <A,B,C> uncurrySeparate(function: (A) -> ((B) -> C)): (A,B) -> C {
     }
 }
 
-class UncurryTest: Spek({
-    describe("uncurry function") {
-        it("should uncurry the passed in function") {
-            val curried: (a: Int) -> (b: Double) -> String = curry(::functionToBeCurried)
-            val uncurried: (a: Int, b: Double) -> String = uncurry(curried)
+@RunWith(KTestJUnitRunner::class)
+class UncurryTests: ShouldSpec() {
+    init {
+        "uncurry function" {
+            should("should uncurry the passed in function") {
+                val curried: (a: Int)->(b: Double)->String = curry(::functionToBeCurried)
+                val uncurried: (a: Int, b: Double) -> String = uncurry(curried)
 
-            assertEquals("12.5", uncurried(5, 2.5))
+                uncurried(5, 2.5) shouldBe "12.5"
+            }
         }
     }
-})
+}
