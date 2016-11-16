@@ -24,13 +24,14 @@ fun product(ds: MyList<Double>): Double = when(ds) {
 fun <A> myListOf(vararg values: A): MyList<A> {
     if(values.size == 0) return Nil;
 
-    tailrec fun loop(list: MyList<A>, index: Int): MyList<A> {
-        if (index == 0) return list
+    tailrec fun loop(list: MyList<A>, lastProcessedIndex: Int): MyList<A> {
+        val index = lastProcessedIndex-1
+        if (index < 0) return list
 
-        return loop(Cons(values[index-1], list), index-1)
+        return loop(Cons(values[index], list), index)
     }
 
-    return loop(Cons(values.last(), Nil), values.size-1)
+    return loop(Nil, values.size)
 }
 
 @RunWith(KTestJUnitRunner::class)
@@ -67,9 +68,13 @@ class MyListTests: FeatureSpec() {
                 test.head shouldBe 1
             }
 
-            scenario("handle a multiple entry list and return the correct values from it") {
+            scenario("handle a multiple entry list and return the correct first value from it") {
                 val test: Cons<Int> = myListOf<Int>(2, 1) as Cons<Int>
                 test.head shouldBe 2
+            }
+
+            scenario("handle a multiple entry list and return the correct 2nd value from it") {
+                val test: Cons<Int> = myListOf<Int>(2, 1) as Cons<Int>
                 val next: Cons<Int> = test.tail as Cons<Int>
                 next.head shouldBe 1
             }
