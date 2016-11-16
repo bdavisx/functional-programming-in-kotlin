@@ -47,13 +47,13 @@ class MyListTests: FeatureSpec() {
             }
         }
         feature("product(MyList<A>)") {
-            scenario("Nil should return 0") {
-                product(Nil) shouldBe 1.0
+            scenario("Nil should return 1.0") {
+                product(Nil) shouldBe (1.0 plusOrMinus 0.0)
             }
 
-            scenario("Correctly sum values") {
-                product(myListOf(5.0)) shouldBe 5.0
-                product(myListOf(2.0, 5.0, 7.0)) shouldBe 70.0
+            scenario("Correctly multiply values") {
+                product(myListOf(5.0)) shouldBe (5.0 plusOrMinus 0.0)
+                product(myListOf(2.0, 5.0, 7.0)) shouldBe (70.0 plusOrMinus 0.0)
             }
         }
         feature("myListOf<A>()") {
