@@ -33,6 +33,7 @@ class FibonacciTest: FeatureSpec() {
         val expectedValues = arrayOf(0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610,
             987, 1597, 2584, 4181, 6765, 10946, 17711, 28657, 46368, 75025, 121393, 196418, 317811)
 
+        // these are the same tests as earlier using a higher order function
         fun runFibonacciTests(function: (Int)->Int) {
             scenario("should return the correct first value") {
                 function(0) shouldBe 0
@@ -46,7 +47,7 @@ class FibonacciTest: FeatureSpec() {
             }
         }
 
-        feature("fibonacci functions") {
+        feature("fibonacci functions tested using higher order functions") {
             runFibonacciTests(::fibonacci)
             runFibonacciTests(::fibonacci2)
         }
