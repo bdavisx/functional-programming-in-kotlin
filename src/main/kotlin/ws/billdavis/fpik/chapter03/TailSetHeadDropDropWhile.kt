@@ -14,12 +14,22 @@ fun <A> setHead(list: MyList<A>, newHead: A): MyList<A> = when(list) {
     is Cons -> Cons(newHead, list.tail)
 }
 
-fun <A> drop(list: MyList<A>, numberOfItems: Int): MyList<A> = when(numberOfItems) {
+tailrec fun <A> drop(list: MyList<A>, numberOfItems: Int): MyList<A> = when(numberOfItems) {
     0 -> list
     else -> when(list) {
         is Nil -> Nil
         is Cons -> drop(list.tail, numberOfItems-1)
     }
+}
+
+fun <A> dropWhile(list: MyList<A>, f: (A) -> Boolean): MyList<A> = when(list) {
+    is Nil -> Nil
+    is Cons ->
+        if(f(list.head)) {
+            dropWhile(list.tail, f)
+        } else {
+            list
+        }
 }
 
 @RunWith(KTestJUnitRunner::class)
@@ -64,6 +74,23 @@ class Chapter3_2Tests: FeatureSpec() {
 
             scenario("should return correctly with multi-element list") {
                 drop(myListOf(1,2,3,4), 2) shouldBe myListOf(3,4)
+            }
+        }
+        feature("dropWhile MyList<A>, f") {
+            scenario("Nil should return Nil") {
+                dropWhile(Nil, {true}) shouldBe Nil
+            }
+
+            scenario("true predicate should return Nil") {
+                dropWhile(myListOf(1,2,3,4), {true}) shouldBe Nil
+            }
+
+            scenario("False predicate should return same list") {
+                dropWhile(myListOf(1,2,3), {false}) shouldBe myListOf(1,2,3)
+            }
+
+            scenario("should return correctly with multi-element list") {
+                dropWhile(myListOf(1,2,3,4,5), {it < 3}) shouldBe myListOf(3,4,5)
             }
         }
     }
