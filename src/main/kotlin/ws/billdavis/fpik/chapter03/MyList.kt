@@ -37,7 +37,7 @@ fun <A> myListOf(vararg values: A): MyList<A> {
 @RunWith(KTestJUnitRunner::class)
 class MyListTests: FeatureSpec() {
     init {
-        feature("sum(MyList<A>)") {
+        feature("sum MyList<A>") {
             scenario("Nil should return 0") {
                 sum(Nil) shouldBe 0
             }
@@ -47,7 +47,7 @@ class MyListTests: FeatureSpec() {
                 sum(myListOf(1,5,7)) shouldBe 13
             }
         }
-        feature("product(MyList<A>)") {
+        feature("product MyList<A>") {
             scenario("Nil should return 1.0") {
                 product(Nil) shouldBe (1.0 plusOrMinus 0.0)
             }
@@ -57,7 +57,7 @@ class MyListTests: FeatureSpec() {
                 product(myListOf(2.0, 5.0, 7.0)) shouldBe (70.0 plusOrMinus 0.0)
             }
         }
-        feature("myListOf<A>()") {
+        feature("myListOf<A>") {
             scenario("create an empty list if not passed anything") {
                 val test = myListOf<Int>()
                 (test == Nil) shouldBe true
