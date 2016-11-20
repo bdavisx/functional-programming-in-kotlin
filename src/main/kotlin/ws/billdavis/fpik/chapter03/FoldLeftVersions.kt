@@ -20,7 +20,6 @@ class FoldLeftVersionsTests: FeatureSpec() {
             scenario("Nil should return 0") {
                 sumFL(Nil) shouldBe 0
             }
-
             scenario("Correctly sum values") {
                 sumFL(myListOf(5)) shouldBe 5
                 sumFL(myListOf(1,5,7)) shouldBe 13

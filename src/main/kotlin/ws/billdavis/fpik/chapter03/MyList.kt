@@ -41,7 +41,6 @@ class MyListTests: FeatureSpec() {
             scenario("Nil should return 0") {
                 sum(Nil) shouldBe 0
             }
-
             scenario("Correctly sum values") {
                 sum(myListOf(5)) shouldBe 5
                 sum(myListOf(1,5,7)) shouldBe 13
@@ -51,7 +50,6 @@ class MyListTests: FeatureSpec() {
             scenario("Nil should return 1.0") {
                 product(Nil) shouldBe (1.0 plusOrMinus 0.0)
             }
-
             scenario("Correctly multiply values") {
                 product(myListOf(5.0)) shouldBe (5.0 plusOrMinus 0.0)
                 product(myListOf(2.0, 5.0, 7.0)) shouldBe (70.0 plusOrMinus 0.0)
@@ -62,17 +60,14 @@ class MyListTests: FeatureSpec() {
                 val test = myListOf<Int>()
                 (test == Nil) shouldBe true
             }
-
             scenario("handle a single entry list and return the correct value from it") {
                 val test: Cons<Int> = myListOf<Int>(1) as Cons<Int>
                 test.head shouldBe 1
             }
-
             scenario("handle a multiple entry list and return the correct first value from it") {
                 val test: Cons<Int> = myListOf<Int>(2, 1) as Cons<Int>
                 test.head shouldBe 2
             }
-
             scenario("handle a multiple entry list and return the correct 2nd value from it") {
                 val test: Cons<Int> = myListOf<Int>(2, 1) as Cons<Int>
                 val next: Cons<Int> = test.tail as Cons<Int>
