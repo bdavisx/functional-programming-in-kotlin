@@ -22,14 +22,22 @@ tailrec fun <A> drop(list: MyList<A>, numberOfItems: Int): MyList<A> = when(numb
     }
 }
 
-fun <A> dropWhile(list: MyList<A>, f: (A) -> Boolean): MyList<A> = when(list) {
+tailrec fun <A> dropWhile(list: MyList<A>, f: (A) -> Boolean): MyList<A> = when(list) {
     is Nil -> Nil
     is Cons ->
-        if(f(list.head)) {
-            dropWhile(list.tail, f)
-        } else {
+        if(!f(list.head)) {
             list
+        } else {
+            dropWhile(list.tail, f)
         }
+}
+
+fun <A> init(list: MyList<A>): MyList<A> = when(list) {
+    is Nil -> Nil
+    is Cons -> when(list.tail) {
+        is Nil -> Nil
+        is Cons -> Cons(list.head, init(list.tail))
+    }
 }
 
 @RunWith(KTestJUnitRunner::class)
@@ -91,6 +99,19 @@ class Chapter3_2Tests: FeatureSpec() {
 
             scenario("should return correctly with multi-element list") {
                 dropWhile(myListOf(1,2,3,4,5), {it < 3}) shouldBe myListOf(3,4,5)
+            }
+        }
+        feature("init MyList<A>") {
+            scenario("Nil should return Nil") {
+                init(Nil) shouldBe Nil
+            }
+
+            scenario("Single item list should return Nil") {
+                init(myListOf(1)) shouldBe Nil
+            }
+
+            scenario("should return correctly with multi-element list") {
+                init(myListOf(1,2,3)) shouldBe myListOf(1,2)
             }
         }
     }
