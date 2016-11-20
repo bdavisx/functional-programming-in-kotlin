@@ -13,9 +13,23 @@ fun sumFL(ds: MyList<Int>): Int = foldLeft(ds, 0, {b, a -> a+b})
 fun productFL(ds: MyList<Double>): Double = foldLeft(ds, 1.0, {b, a -> a*b})
 fun <A> lengthFL(list: MyList<A>): Int = foldLeft(list, 0, {a, b -> a+1})
 
+fun <A> reverse(list: MyList<A>): MyList<A> = when(list) {
+    is Nil -> Nil
+    is Cons -> foldLeft(list.tail, Cons(list.head, Nil), { b, a -> Cons(a,b)})
+}
+
 @RunWith(KTestJUnitRunner::class)
 class FoldLeftVersionsTests: FeatureSpec() {
     init {
+        feature("reverse MyList<A>") {
+            scenario("Nil should return Nil") {
+                reverse(Nil) shouldBe Nil
+            }
+            scenario("Correctly reverse lists") {
+                reverse(myListOf(5)) shouldBe myListOf(5)
+                reverse(myListOf(1,2,3)) shouldBe myListOf(3,2,1)
+            }
+        }
         feature("sumFL MyList<A>") {
             scenario("Nil should return 0") {
                 sumFL(Nil) shouldBe 0

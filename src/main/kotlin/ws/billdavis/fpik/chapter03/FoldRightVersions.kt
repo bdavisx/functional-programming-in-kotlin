@@ -10,7 +10,6 @@ fun <A,B> foldRight(list: MyList<A>, zero: B, f: (A,B) -> B): B = when(list) {
 }
 
 fun productFR(ds: MyList<Double>): Double = foldRight(ds, 1.0, {a, b -> a*b})
-
 fun <A> length(list: MyList<A>): Int = foldRight(list, 0, {a, b -> b+1})
 
 @RunWith(KTestJUnitRunner::class)
