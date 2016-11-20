@@ -4,19 +4,29 @@ import io.kotlintest.KTestJUnitRunner
 import io.kotlintest.specs.FeatureSpec
 import org.junit.runner.RunWith
 
-fun <A,B> foldLeft(list: MyList<A>, zero: B, f: (B,A) -> B): B = when(list) {
+tailrec fun <A,B> foldLeft(list: MyList<A>, zero: B, f: (B,A) -> B): B = when(list) {
     is Nil -> zero
     is Cons -> foldLeft(list.tail, f(zero, list.head), f)
 }
 
+fun sumFL(ds: MyList<Int>): Int = foldLeft(ds, 0, {b, a -> a+b})
 fun productFL(ds: MyList<Double>): Double = foldLeft(ds, 1.0, {b, a -> a*b})
-
 fun <A> lengthFL(list: MyList<A>): Int = foldLeft(list, 0, {a, b -> a+1})
 
 @RunWith(KTestJUnitRunner::class)
-class Chapter3_10Tests: FeatureSpec() {
+class FoldLeftVersionsTests: FeatureSpec() {
     init {
-        feature("length MyList<A>") {
+        feature("sumFL MyList<A>") {
+            scenario("Nil should return 0") {
+                sumFL(Nil) shouldBe 0
+            }
+
+            scenario("Correctly sum values") {
+                sumFL(myListOf(5)) shouldBe 5
+                sumFL(myListOf(1,5,7)) shouldBe 13
+            }
+        }
+        feature("lengthFL MyList<A>") {
             scenario("Nil should return 0") {
                 lengthFL(Nil) shouldBe 0
             }

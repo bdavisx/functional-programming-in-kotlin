@@ -41,7 +41,7 @@ fun <A> init(list: MyList<A>): MyList<A> = when(list) {
 }
 
 @RunWith(KTestJUnitRunner::class)
-class Chapter3_2Tests: FeatureSpec() {
+class TailSetHeadDropDropWhileInitTests: FeatureSpec() {
     init {
         feature("tail MyList<A>") {
             scenario("Nil should return Nil") {
