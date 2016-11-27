@@ -15,7 +15,7 @@ fun <A,B> foldRightInTermsOfFoldLeft(list: MyList<A>, zero: B, f: (A,B) -> B): B
     }
     return when(list) {
         is Nil -> zero
-        is Cons -> foldLeft(list, zero, convert(f))
+        is Cons -> foldLeft(reverse(list), zero, convert(f))
     }
 }
 
@@ -53,6 +53,11 @@ class FoldRightITOFLVersionsTests: FeatureSpec() {
             scenario("Correctly multiply values") {
                 productFRITOFL(myListOf(5.0)) shouldBe (5.0 plusOrMinus 0.0)
                 productFRITOFL(myListOf(2.0, 5.0, 7.0)) shouldBe (70.0 plusOrMinus 0.0)
+            }
+            scenario("pass Nil and Cons to foldRight") {
+                val x : MyList<Int> = foldRightInTermsOfFoldLeft<Int, MyList<Int>>(myListOf(1,2,3,4), Nil, {
+                    a: Int, b: MyList<Int> -> Cons(a,b)})
+                x shouldBe myListOf(1,2,3,4)
             }
         }
     }
