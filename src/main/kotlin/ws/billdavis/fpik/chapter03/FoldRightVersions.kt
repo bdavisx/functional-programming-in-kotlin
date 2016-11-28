@@ -12,21 +12,40 @@ fun <A,B> foldRight(list: MyList<A>, zero: B, f: (A,B) -> B): B = when(list) {
 fun productFR(ds: MyList<Double>): Double = foldRight(ds, 1.0, {a, b -> a*b})
 fun <A> length(list: MyList<A>): Int = foldRight(list, 0, {a, b -> b+1})
 
-fun <A> append(list: MyList<A>, a: A) = foldRight<A, MyList<A>>(list, Cons(a, Nil), {
-    a: A, b: MyList<A> -> Cons(a,b)})
+fun <A> append(a1: MyList<A>, a2: MyList<A>): MyList<A> = when(a1) {
+    is Nil -> a2
+    is Cons -> Cons(a1.head, append(a1.tail, a2))
+}
+
+fun <A> concatenate(listOfLists: MyList<MyList<A>>): MyList<A> {
+    return foldRight(listOfLists, Nil as MyList<A>,
+        { a: MyList<A>, b: MyList<A> -> append(a, b)})
+}
 
 @RunWith(KTestJUnitRunner::class)
 class FoldRightVersionsTests: FeatureSpec() {
     init {
-        feature("append MyList<A>") {
-            scenario("appending to Nil should return item") {
-                append(Nil, 5) shouldBe myListOf(5)
+        feature("concat MyList<A>") {
+            scenario("concating to Nil should return item") {
+                concatenate(myListOf(Nil, myListOf(5))) shouldBe myListOf(5)
             }
             scenario("appending to single element should return element and new element") {
-                append(myListOf(1), 2) shouldBe myListOf(1, 2)
+                concatenate(myListOf(myListOf(1), myListOf(2))) shouldBe myListOf(1, 2)
             }
             scenario("multi element list should append correctly") {
-                append(myListOf(1,2,3,4),5) shouldBe myListOf(1,2,3,4,5)
+                concatenate(myListOf(myListOf(1,2,3,4), myListOf(5,6,7))) shouldBe
+                    myListOf(1,2,3,4,5,6,7)
+            }
+        }
+        feature("append MyList<A>") {
+            scenario("appending to Nil should return item") {
+                append(Nil, myListOf(5)) shouldBe myListOf(5)
+            }
+            scenario("appending to single element should return element and new element") {
+                append(myListOf(1), myListOf(2)) shouldBe myListOf(1, 2)
+            }
+            scenario("multi element list should append correctly") {
+                append(myListOf(1,2,3,4), myListOf(5,6,7)) shouldBe myListOf(1,2,3,4,5,6,7)
             }
         }
         feature("length MyList<A>") {
