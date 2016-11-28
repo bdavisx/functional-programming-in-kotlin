@@ -19,7 +19,6 @@ fun <A,B> foldRightInTermsOfFoldLeft(list: MyList<A>, zero: B, f: (A,B) -> B): B
     }
 }
 
-
 fun sumFL(ds: MyList<Int>): Int = foldLeft(ds, 0, {b, a -> a+b})
 fun productFL(ds: MyList<Double>): Double = foldLeft(ds, 1.0, {b, a -> a*b})
 fun <A> lengthFL(list: MyList<A>): Int = foldLeft(list, 0, {a, b -> a+1})
