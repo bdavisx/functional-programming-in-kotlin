@@ -14,8 +14,9 @@ fun convertToString(list: MyList<Double>): MyList<String> = when(list) {
     is Cons -> Cons(list.head.toString(), convertToString(list.tail))
 }
 
-fun <A,B> map(list: MyList<A>, f: (A) -> B): MyList<B> {
-    return Nil
+fun <A,B> map(list: MyList<A>, f: (A) -> B): MyList<B> = when(list) {
+    is Nil -> Nil
+    is Cons -> Cons(f(list.head), map(list.tail, f))
 }
 
 @RunWith(KTestJUnitRunner::class)
@@ -29,6 +30,15 @@ class MapAndRelatedTests: FeatureSpec() {
         feature("convertToString()") {
             scenario("convert all items to Strings") {
                 convertToString(myListOf(1.1,2.2,3.3,4.4)) shouldBe
+                    myListOf("1.1", "2.2", "3.3", "4.4")
+            }
+        }
+        feature("map()") {
+            scenario("add 1 to all items") {
+                map(myListOf(1,2,3,4), { a -> a + 1 }) shouldBe myListOf(2,3,4,5)
+            }
+            scenario("convert all items to Strings") {
+                map(myListOf(1.1,2.2,3.3,4.4), { a -> a.toString() }) shouldBe
                     myListOf("1.1", "2.2", "3.3", "4.4")
             }
         }
