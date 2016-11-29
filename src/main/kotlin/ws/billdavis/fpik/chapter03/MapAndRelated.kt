@@ -57,10 +57,7 @@ fun <A,B,C> zipWith(list1: MyList<A>, list2: MyList<B>, f: (A,B) -> C ): MyList<
 
 tailrec fun <A> hasSubsequence(listToSearch: MyList<A>, subsequence: MyList<A>): Boolean =
     when (listToSearch) {
-        is Nil -> when(subsequence) {
-            is Nil -> true
-            is Cons -> false
-        }
+        is Nil -> subsequence == Nil
         is Cons -> when(subsequence) {
             is Nil -> true
             is Cons -> hasSubsequence(listToSearch.tail, subsequence.tail)
