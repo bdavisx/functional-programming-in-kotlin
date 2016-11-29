@@ -24,7 +24,7 @@ fun <A,B> flatMap(list: MyList<A>, f: (A) -> MyList<B>): MyList<B> = when(list) 
     is Cons -> concatenate<B>(myListOf(f(list.head), flatMap(list.tail, f)))
 }
 
-fun <A> filter(list: MyList<A>, f: (A) -> Boolean): MyList<A> = when(list) {
+tailrec fun <A> filter(list: MyList<A>, f: (A) -> Boolean): MyList<A> = when(list) {
     is Nil -> Nil
     is Cons ->
         if(f(list.head)) { Cons(list.head, filter(list.tail, f)) }
@@ -52,6 +52,18 @@ fun <A,B,C> zipWith(list1: MyList<A>, list2: MyList<B>, f: (A,B) -> C ): MyList<
         is Cons -> when(list2) {
             is Nil -> Nil
             is Cons -> Cons(f(list1.head, list2.head), zipWith(list1.tail, list2.tail, f))
+        }
+    }
+
+tailrec fun <A> hasSubsequence(listToSearch: MyList<A>, subsequence: MyList<A>): Boolean =
+    when (listToSearch) {
+        is Nil -> when(subsequence) {
+            is Nil -> true
+            is Cons -> false
+        }
+        is Cons -> when(subsequence) {
+            is Nil -> true
+            is Cons -> hasSubsequence(listToSearch.tail, subsequence.tail)
         }
     }
 
@@ -115,14 +127,43 @@ class MapAndRelatedTests: FeatureSpec() {
         }
         feature("zipWith") {
             scenario("nil on left") {
-                zipWith(Nil, myListOf(4, 5, 6), {a, b -> 0}) shouldBe Nil
+                zipWith(Nil, myListOf(4, 5, 6), {_, _ -> 0}) shouldBe Nil
             }
             scenario("nil on right") {
-                zipWith(myListOf(1, 2, 3), Nil, {a, b -> 0}) shouldBe Nil
+                zipWith(myListOf(1, 2, 3), Nil, {_, _ -> 0}) shouldBe Nil
             }
             scenario("exercise 3.22") {
                 zipWith(myListOf(1, 2, 3), myListOf("a", "b", "C"), {n, l -> "$n $l"}) shouldBe
                     myListOf("1 a", "2 b", "3 C")
+            }
+        }
+        feature("hasSubsequence") {
+            scenario("nil matches nil") {
+                hasSubsequence(Nil, Nil) shouldBe true
+            }
+            scenario("single entry matches") {
+                hasSubsequence(myListOf(1), myListOf(1)) shouldBe true
+            }
+            scenario("single entry matches nil") {
+                hasSubsequence(myListOf(1), Nil) shouldBe true
+            }
+            scenario("Nil entry doesn't match single entry") {
+                hasSubsequence(Nil, myListOf(1)) shouldBe false
+            }
+
+            val theList = myListOf(1,2,3,4,5,6,7,8,9,10)
+
+            scenario("Nil subsequence true") {
+                hasSubsequence(theList, Nil) shouldBe true
+            }
+            scenario("subsequence @ beginning") {
+                hasSubsequence(theList, myListOf(1,2,3)) shouldBe true
+            }
+            scenario("subsequence in middle") {
+                hasSubsequence(theList, myListOf(4,5,6)) shouldBe true
+            }
+            scenario("subsequence at end") {
+                hasSubsequence(theList, myListOf(7,8,9,10)) shouldBe true
             }
         }
     }
