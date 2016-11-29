@@ -37,6 +37,19 @@ fun <A> filterViaFlatMap(list: MyList<A>, f: (A) -> Boolean): MyList<A> =
         else { Nil }
     })
 
+fun addLists(list1: MyList<Int>, list2: MyList<Int>): MyList<Int> =
+    when(list1) {
+        is Nil -> when(list2) {
+            is Nil -> Nil
+            is Cons -> list2
+        }
+        is Cons -> when(list2) {
+            is Nil -> list1
+            is Cons -> Cons(list1.head + list2.head, addLists(list1.tail, list2.tail))
+        }
+    }
+
+
 @RunWith(KTestJUnitRunner::class)
 class MapAndRelatedTests: FeatureSpec() {
     init {
@@ -82,6 +95,20 @@ class MapAndRelatedTests: FeatureSpec() {
             scenario("filter out odd numbers") {
                 filterViaFlatMap(myListOf(1, 2, 3, 4, 5, 6, 7, 8, 9), { a -> a % 2 == 0 }) shouldBe
                     myListOf(2, 4, 6, 8)
+            }
+        }
+        feature("addLists()") {
+            scenario("nil on left") {
+                addLists(Nil, myListOf(4, 5, 6)) shouldBe myListOf(4, 5, 6)
+            }
+            scenario("nil on right") {
+                addLists(myListOf(1, 2, 3), Nil) shouldBe myListOf(1, 2, 3)
+            }
+            scenario("different length lists") {
+                addLists(myListOf(1, 2, 3, 4), myListOf(4, 5, 6)) shouldBe myListOf(5, 7, 9, 4)
+            }
+            scenario("exercise 3.22") {
+                addLists(myListOf(1, 2, 3), myListOf(4, 5, 6)) shouldBe myListOf(5, 7, 9)
             }
         }
     }
