@@ -12,35 +12,48 @@ sealed class Tree<out A> {
         is Leaf<*> -> 1
         is Branch<*> -> 1 + left.size() + right.size()
     }
+
+    fun depth(): Int {
+        tailrec fun loop(tree: Tree<A>, currentDepth: Int, maximumDepth: Int): Int = when (tree) {
+                is Tree.Leaf<A> -> Math.max(currentDepth, maximumDepth)
+                is Tree.Branch<A> ->
+                    loop(tree.left, currentDepth+1, loop(tree.right, currentDepth+1, maximumDepth))
+            }
+
+        return loop(this, 1, 1)
+    }
 }
 
-tailrec fun maximum(tree: Tree<Int>): Int {
-    fun loop(tree: Tree<Int>, currentMaximum: Int): Int {
+fun <A: Comparable<A>> Tree<A>.maximum(): A {
+    tailrec fun loop(tree: Tree<A>, currentMaximum: A?): A {
         return when (tree) {
-            is Tree.Leaf<Int> -> Math.max(tree.value, currentMaximum)
-            is Tree.Branch<Int> -> loop(tree.left,loop(tree.right, currentMaximum))
+            is Tree.Leaf<A> -> when(currentMaximum) {
+                null -> tree.value
+                else -> if (tree.value.compareTo(currentMaximum) < 0) currentMaximum else tree.value
+            }
+            is Tree.Branch<A> -> loop(tree.left,loop(tree.right, currentMaximum))
         }
     }
-    return loop(tree, Int.MIN_VALUE)
+    return loop(this, null)
 }
 
 @RunWith(KTestJUnitRunner::class)
 class TreeTests: FeatureSpec() {
     init {
-        feature("maximum(tree)") {
-            scenario("max of single leaf s/b value iof that leaf") {
+        feature("tree.depth") {
+            scenario("depth leaf s/b 1") {
                 val tree: Tree<Int> = Tree.Leaf(10)
-                maximum(tree) shouldBe 10
+                tree.depth() shouldBe 1
             }
-            scenario("maximum of multiple branches/trees s/b correct") {
+            scenario("depth of multiple branches/trees s/b correct") {
                 val tree: Tree<Int> =
                     Tree.Branch(
                         Tree.Leaf(1),
                         Tree.Branch(
                             Tree.Leaf(2),
-                            Tree.Leaf(3)))
+                            Tree.Leaf(5)))
 
-                maximum(tree) shouldBe 3
+                tree.depth() shouldBe 3
             }
         }
         feature("Tree.size") {
@@ -57,6 +70,22 @@ class TreeTests: FeatureSpec() {
                             Tree.Leaf(1)))
 
                 tree.size() shouldBe 5
+            }
+        }
+        feature("maximum tree") {
+            scenario("max of single leaf s/b value iof that leaf") {
+                val tree: Tree<Int> = Tree.Leaf(10)
+                tree.maximum() shouldBe 10
+            }
+            scenario("maximum of multiple branches/trees s/b correct") {
+                val tree: Tree<Int> =
+                    Tree.Branch(
+                        Tree.Leaf(1),
+                        Tree.Branch(
+                            Tree.Leaf(2),
+                            Tree.Leaf(3)))
+
+                tree.maximum() shouldBe 3
             }
         }
     }
