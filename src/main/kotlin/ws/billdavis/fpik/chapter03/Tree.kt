@@ -23,11 +23,19 @@ sealed class Tree<out A> {
         return loop(this, 1, 1)
     }
 
-    fun <B> map(f: (A)->B): Tree<B> =
+    fun <B> map(f: (A) -> B): Tree<B> =
         when (this) {
             is Tree.Leaf<A> -> Tree.Leaf<B>(f(value))
             is Tree.Branch<A> -> Tree.Branch<B>(left.map(f), right.map(f))
         }
+
+    fun <B> fold(f: (A) -> B, g: (B,B) -> B): B =
+        when (this) {
+            is Tree.Leaf<A> -> f(this.value)
+            is Tree.Branch<A> -> g(left.fold(f,g), right.fold(f,g))
+        }
+
+    fun sizeViaFold(): Int = fold({_ -> 1}, {l,r -> 1 + l + r})
 
 }
 
@@ -80,6 +88,22 @@ class TreeTests: FeatureSpec() {
                             Tree.Leaf(1)))
 
                 tree.size() shouldBe 5
+            }
+        }
+        feature("Tree.sizeViaFold") {
+            scenario("size of single leaf s/b 1") {
+                val tree: Tree<Int> = Tree.Leaf(1)
+                tree.sizeViaFold() shouldBe 1
+            }
+            scenario("size of multiple branches/trees s/b correct") {
+                val tree: Tree<Int> =
+                    Tree.Branch(
+                        Tree.Leaf(1),
+                        Tree.Branch(
+                            Tree.Leaf(2),
+                            Tree.Leaf(1)))
+
+                tree.sizeViaFold() shouldBe 5
             }
         }
         feature("maximum tree") {
