@@ -15,13 +15,20 @@ sealed class Tree<out A> {
 
     fun depth(): Int {
         tailrec fun loop(tree: Tree<A>, currentDepth: Int, maximumDepth: Int): Int = when (tree) {
-                is Tree.Leaf<A> -> Math.max(currentDepth, maximumDepth)
-                is Tree.Branch<A> ->
-                    loop(tree.left, currentDepth+1, loop(tree.right, currentDepth+1, maximumDepth))
-            }
+            is Tree.Leaf<A> -> Math.max(currentDepth, maximumDepth)
+            is Tree.Branch<A> ->
+                loop(tree.left, currentDepth + 1, loop(tree.right, currentDepth + 1, maximumDepth))
+        }
 
         return loop(this, 1, 1)
     }
+
+    fun <B> map(f: (A)->B): Tree<B> =
+        when (this) {
+            is Tree.Leaf<A> -> Tree.Leaf<B>(f(value))
+            is Tree.Branch<A> -> Tree.Branch<B>(left.map(f), right.map(f))
+        }
+
 }
 
 fun <A: Comparable<A>> Tree<A>.maximum(): A {
@@ -40,20 +47,23 @@ fun <A: Comparable<A>> Tree<A>.maximum(): A {
 @RunWith(KTestJUnitRunner::class)
 class TreeTests: FeatureSpec() {
     init {
-        feature("tree.depth") {
+        feature("tree.map") {
             scenario("depth leaf s/b 1") {
                 val tree: Tree<Int> = Tree.Leaf(10)
-                tree.depth() shouldBe 1
+                val tree2: Tree<String> = tree.map({ a -> a.toString() })
+                if( tree2 is Tree.Branch<String> ) fail("Tree should have been a leaf")
+                (tree2 as Tree.Leaf<String>).value shouldBe "10"
             }
             scenario("depth of multiple branches/trees s/b correct") {
                 val tree: Tree<Int> =
                     Tree.Branch(
-                        Tree.Leaf(1),
+                        Tree.Leaf(555),
                         Tree.Branch(
                             Tree.Leaf(2),
                             Tree.Leaf(5)))
 
-                tree.depth() shouldBe 3
+                val tree2: Tree<String> = tree.map({ a -> a.toString() })
+                ((tree2 as Tree.Branch<String>).left as Tree.Leaf<String>).value shouldBe "555"
             }
         }
         feature("Tree.size") {
@@ -86,6 +96,22 @@ class TreeTests: FeatureSpec() {
                             Tree.Leaf(3)))
 
                 tree.maximum() shouldBe 3
+            }
+        }
+        feature("tree.depth") {
+            scenario("depth leaf s/b 1") {
+                val tree: Tree<Int> = Tree.Leaf(10)
+                tree.depth() shouldBe 1
+            }
+            scenario("depth of multiple branches/trees s/b correct") {
+                val tree: Tree<Int> =
+                    Tree.Branch(
+                        Tree.Leaf(1),
+                        Tree.Branch(
+                            Tree.Leaf(2),
+                            Tree.Leaf(5)))
+
+                tree.depth() shouldBe 3
             }
         }
     }
