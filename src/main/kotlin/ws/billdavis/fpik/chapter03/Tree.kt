@@ -22,6 +22,8 @@ sealed class Tree<out A> {
 
         return loop(this, 1, 1)
     }
+    fun depthViaFold(): Int = fold({x: A -> 1},
+        {l: Int,r: Int -> 1 + l + r})
 
     fun <B> map(f: (A) -> B): Tree<B> =
         when (this) {
@@ -29,10 +31,13 @@ sealed class Tree<out A> {
             is Tree.Branch<A> -> Tree.Branch<B>(left.map(f), right.map(f))
         }
 
-    fun <B> fold(f: (A) -> B, g: (B,B) -> B): B =
+    fun <B> fold(leafProcessor: (A) -> B, branchProcessor: (B,B) -> B): B =
         when (this) {
-            is Tree.Leaf<A> -> f(this.value)
-            is Tree.Branch<A> -> g(left.fold(f,g), right.fold(f,g))
+            is Tree.Leaf<A> -> leafProcessor(this.value)
+            is Tree.Branch<A> ->
+                branchProcessor(
+                    left.fold(leafProcessor, branchProcessor),
+                    right.fold(leafProcessor, branchProcessor))
         }
 
     fun sizeViaFold(): Int = fold({_ -> 1}, {l,r -> 1 + l + r})
@@ -56,13 +61,13 @@ fun <A: Comparable<A>> Tree<A>.maximum(): A {
 class TreeTests: FeatureSpec() {
     init {
         feature("tree.map") {
-            scenario("depth leaf s/b 1") {
+            scenario("mapping should work in single leaf tree") {
                 val tree: Tree<Int> = Tree.Leaf(10)
                 val tree2: Tree<String> = tree.map({ a -> a.toString() })
                 if( tree2 is Tree.Branch<String> ) fail("Tree should have been a leaf")
                 (tree2 as Tree.Leaf<String>).value shouldBe "10"
             }
-            scenario("depth of multiple branches/trees s/b correct") {
+            scenario("mapping should work on multiple level tree") {
                 val tree: Tree<Int> =
                     Tree.Branch(
                         Tree.Leaf(555),
@@ -136,6 +141,22 @@ class TreeTests: FeatureSpec() {
                             Tree.Leaf(5)))
 
                 tree.depth() shouldBe 3
+            }
+        }
+        feature("tree.depthViaFold") {
+//            scenario("depth leaf s/b 1") {
+//                val tree: Tree<Int> = Tree.Leaf(10)
+//                tree.depthViaFold() shouldBe 1
+//            }
+            scenario("depth of multiple branches/trees s/b correct") {
+                val tree: Tree<Int> =
+                    Tree.Branch(
+                        Tree.Leaf(1),
+                        Tree.Branch(
+                            Tree.Leaf(2),
+                            Tree.Leaf(5)))
+
+                tree.depthViaFold() shouldBe 3
             }
         }
     }
