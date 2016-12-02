@@ -22,13 +22,14 @@ sealed class Tree<out A> {
         }
         return loop(this, 1, 1)
     }
-    fun depthViaFold(): Int = fold({x -> 0},
-        {l,r -> 1 + Math.max(l, r)}) + 1
+    fun depthViaFold(): Int = fold({x -> 0}, {l,r -> 1 + Math.max(l, r)}) + 1
 
     fun <B> map(f: (A) -> B): Tree<B> = when (this) {
         is Leaf<A> -> Tree.Leaf<B>(f(value))
         is Branch<A> -> Tree.Branch<B>(left.map(f), right.map(f))
     }
+    fun <B> mapViaFold(f: (A) -> B): Tree<B> = fold<Tree<B>>({x -> Tree.Leaf<B>(f(x))},
+        {l,r -> Tree.Branch<B>(l, r)})
 
     fun <B> fold(leafProcessor: (A) -> B, branchProcessor : (B,B) -> B): B = when (this) {
         is Leaf<A> -> leafProcessor(this.value)
@@ -88,13 +89,13 @@ class TreeTests: FeatureSpec() {
             }
         }
         feature("tree.map") {
-            scenario("depth leaf s/b 1") {
+            scenario("should correctly convert a tree") {
                 val tree: Tree<Int> = Tree.Leaf(10)
                 val tree2: Tree<String> = tree.map({ a -> a.toString() })
                 if( tree2 is Tree.Branch<String> ) fail("Tree should have been a leaf")
                 (tree2 as Tree.Leaf<String>).value shouldBe "10"
             }
-            scenario("depth of multiple branches/trees s/b correct") {
+            scenario("should correctly convert multiple branches/trees") {
                 val tree: Tree<Int> =
                     Tree.Branch(
                         Tree.Leaf(555),
@@ -103,6 +104,25 @@ class TreeTests: FeatureSpec() {
                             Tree.Leaf(5)))
 
                 val tree2: Tree<String> = tree.map({ a -> a.toString() })
+                ((tree2 as Tree.Branch<String>).left as Tree.Leaf<String>).value shouldBe "555"
+            }
+        }
+        feature("tree.mapViaFold") {
+            scenario("should correctly convert a tree") {
+                val tree: Tree<Int> = Tree.Leaf(10)
+                val tree2: Tree<String> = tree.mapViaFold({ a -> a.toString() })
+                if( tree2 is Tree.Branch<String> ) fail("Tree should have been a leaf")
+                (tree2 as Tree.Leaf<String>).value shouldBe "10"
+            }
+            scenario("should correctly convert multiple branches/trees") {
+                val tree: Tree<Int> =
+                    Tree.Branch(
+                        Tree.Leaf(555),
+                        Tree.Branch(
+                            Tree.Leaf(2),
+                            Tree.Leaf(5)))
+
+                val tree2: Tree<String> = tree.mapViaFold({ a -> a.toString() })
                 ((tree2 as Tree.Branch<String>).left as Tree.Leaf<String>).value shouldBe "555"
             }
         }
