@@ -23,20 +23,25 @@ sealed class Tree<out A> {
         return loop(this, 1, 1)
     }
 
+    fun depthViaFold(): Int = fold({x -> x.val+1},
+        {l,r -> 1 + l + r})
+
     fun <B> map(f: (A) -> B): Tree<B> =
         when (this) {
             is Tree.Leaf<A> -> Tree.Leaf<B>(f(value))
             is Tree.Branch<A> -> Tree.Branch<B>(left.map(f), right.map(f))
         }
 
-    fun <B> fold(f: (A) -> B, g: (B,B) -> B): B =
+    fun <B> fold(leafProcessor: (A) -> B, branchProcessor : (B,B) -> B): B =
         when (this) {
-            is Tree.Leaf<A> -> f(this.value)
-            is Tree.Branch<A> -> g(left.fold(f,g), right.fold(f,g))
+            is Tree.Leaf<A> -> leafProcessor(this.value)
+            is Tree.Branch<A> ->
+                branchProcessor(
+                    left.fold(leafProcessor, branchProcessor),
+                    right.fold(leafProcessor, branchProcessor))
         }
 
     fun sizeViaFold(): Int = fold({_ -> 1}, {l,r -> 1 + l + r})
-
 }
 
 fun <A: Comparable<A>> Tree<A>.maximum(): A {
@@ -55,6 +60,22 @@ fun <A: Comparable<A>> Tree<A>.maximum(): A {
 @RunWith(KTestJUnitRunner::class)
 class TreeTests: FeatureSpec() {
     init {
+        feature("tree.depthViaFold") {
+//            scenario("depth leaf s/b 1") {
+//                val tree: Tree<Int> = Tree.Leaf(10)
+//                tree.depthViaFold() shouldBe 1
+//            }
+            scenario("depth of multiple branches/trees s/b correct") {
+                val tree: Tree<Int> =
+                    Tree.Branch(
+                        Tree.Leaf(1),
+                        Tree.Branch(
+                            Tree.Leaf(2),
+                            Tree.Leaf(5)))
+
+                tree.depthViaFold() shouldBe 3
+            }
+        }
         feature("tree.map") {
             scenario("depth leaf s/b 1") {
                 val tree: Tree<Int> = Tree.Leaf(10)
