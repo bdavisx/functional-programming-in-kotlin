@@ -12,6 +12,7 @@ sealed class Tree<out A> {
         is Leaf<*> -> 1
         is Branch<*> -> 1 + left.size() + right.size()
     }
+    fun sizeViaFold(): Int = fold({_ -> 1}, {l,r -> 1 + l + r})
 
     fun depth(): Int {
         tailrec fun loop(tree: Tree<A>, currentDepth: Int, maximumDepth: Int): Int = when (tree) {
@@ -22,9 +23,8 @@ sealed class Tree<out A> {
 
         return loop(this, 1, 1)
     }
-
-    fun depthViaFold(): Int = fold({x -> 1},
-        {l,r -> 1 + l + r})
+    fun depthViaFold(): Int = fold({x -> 0},
+        {l,r -> 1 + Math.max(l, r)}) + 1
 
     fun <B> map(f: (A) -> B): Tree<B> =
         when (this) {
@@ -41,7 +41,6 @@ sealed class Tree<out A> {
                     right.fold(leafProcessor, branchProcessor))
         }
 
-    fun sizeViaFold(): Int = fold({_ -> 1}, {l,r -> 1 + l + r})
 }
 
 fun <A: Comparable<A>> Tree<A>.maximum(): A {
@@ -61,10 +60,10 @@ fun <A: Comparable<A>> Tree<A>.maximum(): A {
 class TreeTests: FeatureSpec() {
     init {
         feature("tree.depthViaFold") {
-//            scenario("depth leaf s/b 1") {
-//                val tree: Tree<Int> = Tree.Leaf(10)
-//                tree.depthViaFold() shouldBe 1
-//            }
+            scenario("depth leaf s/b 1") {
+                val tree: Tree<Int> = Tree.Leaf(10)
+                tree.depthViaFold() shouldBe 1
+            }
             scenario("depth of multiple branches/trees s/b correct") {
                 val tree: Tree<Int> =
                     Tree.Branch(
@@ -74,6 +73,18 @@ class TreeTests: FeatureSpec() {
                             Tree.Leaf(5)))
 
                 tree.depthViaFold() shouldBe 3
+            }
+            scenario("depth of deeper multiple branches/trees s/b correct") {
+                val tree: Tree<Int> =
+                    Tree.Branch(
+                        Tree.Leaf(1),
+                        Tree.Branch(
+                            Tree.Branch(
+                                Tree.Leaf(2),
+                                Tree.Leaf(10)),
+                            Tree.Leaf(5)))
+
+                tree.depthViaFold() shouldBe 4
             }
         }
         feature("tree.map") {
