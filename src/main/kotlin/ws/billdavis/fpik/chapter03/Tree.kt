@@ -16,8 +16,8 @@ sealed class Tree<out A> {
 
     fun depth(): Int {
         tailrec fun loop(tree: Tree<A>, currentDepth: Int, maximumDepth: Int): Int = when (tree) {
-            is Tree.Leaf<A> -> Math.max(currentDepth, maximumDepth)
-            is Tree.Branch<A> ->
+            is Leaf<A> -> Math.max(currentDepth, maximumDepth)
+            is Branch<A> ->
                 loop(tree.left, currentDepth + 1, loop(tree.right, currentDepth + 1, maximumDepth))
         }
 
@@ -28,14 +28,14 @@ sealed class Tree<out A> {
 
     fun <B> map(f: (A) -> B): Tree<B> =
         when (this) {
-            is Tree.Leaf<A> -> Tree.Leaf<B>(f(value))
-            is Tree.Branch<A> -> Tree.Branch<B>(left.map(f), right.map(f))
+            is Leaf<A> -> Tree.Leaf<B>(f(value))
+            is Branch<A> -> Tree.Branch<B>(left.map(f), right.map(f))
         }
 
     fun <B> fold(leafProcessor: (A) -> B, branchProcessor : (B,B) -> B): B =
         when (this) {
-            is Tree.Leaf<A> -> leafProcessor(this.value)
-            is Tree.Branch<A> ->
+            is Leaf<A> -> leafProcessor(this.value)
+            is Branch<A> ->
                 branchProcessor(
                     left.fold(leafProcessor, branchProcessor),
                     right.fold(leafProcessor, branchProcessor))
