@@ -20,27 +20,23 @@ sealed class Tree<out A> {
             is Branch<A> ->
                 loop(tree.left, currentDepth + 1, loop(tree.right, currentDepth + 1, maximumDepth))
         }
-
         return loop(this, 1, 1)
     }
     fun depthViaFold(): Int = fold({x -> 0},
         {l,r -> 1 + Math.max(l, r)}) + 1
 
-    fun <B> map(f: (A) -> B): Tree<B> =
-        when (this) {
-            is Leaf<A> -> Tree.Leaf<B>(f(value))
-            is Branch<A> -> Tree.Branch<B>(left.map(f), right.map(f))
-        }
+    fun <B> map(f: (A) -> B): Tree<B> = when (this) {
+        is Leaf<A> -> Tree.Leaf<B>(f(value))
+        is Branch<A> -> Tree.Branch<B>(left.map(f), right.map(f))
+    }
 
-    fun <B> fold(leafProcessor: (A) -> B, branchProcessor : (B,B) -> B): B =
-        when (this) {
-            is Leaf<A> -> leafProcessor(this.value)
-            is Branch<A> ->
-                branchProcessor(
-                    left.fold(leafProcessor, branchProcessor),
-                    right.fold(leafProcessor, branchProcessor))
-        }
-
+    fun <B> fold(leafProcessor: (A) -> B, branchProcessor : (B,B) -> B): B = when (this) {
+        is Leaf<A> -> leafProcessor(this.value)
+        is Branch<A> ->
+            branchProcessor(
+                left.fold(leafProcessor, branchProcessor),
+                right.fold(leafProcessor, branchProcessor))
+    }
 }
 
 fun <A: Comparable<A>> Tree<A>.maximum(): A {
@@ -55,6 +51,10 @@ fun <A: Comparable<A>> Tree<A>.maximum(): A {
     }
     return loop(this, null)
 }
+fun <A: Comparable<A>> Tree<A>.maximumViaFold(): A =
+    this.fold({a -> a}, { l, r ->
+        if (l.compareTo(r) < 0) r else l
+    })
 
 @RunWith(KTestJUnitRunner::class)
 class TreeTests: FeatureSpec() {
@@ -152,6 +152,22 @@ class TreeTests: FeatureSpec() {
                             Tree.Leaf(3)))
 
                 tree.maximum() shouldBe 3
+            }
+        }
+        feature("maximumViaFold tree") {
+            scenario("max of single leaf s/b value iof that leaf") {
+                val tree: Tree<Int> = Tree.Leaf(10)
+                tree.maximumViaFold() shouldBe 10
+            }
+            scenario("maximum of multiple branches/trees s/b correct") {
+                val tree: Tree<Int> =
+                    Tree.Branch(
+                        Tree.Leaf(1),
+                        Tree.Branch(
+                            Tree.Leaf(2),
+                            Tree.Leaf(3)))
+
+                tree.maximumViaFold() shouldBe 3
             }
         }
         feature("tree.depth") {
