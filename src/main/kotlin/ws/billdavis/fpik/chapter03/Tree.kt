@@ -23,7 +23,7 @@ sealed class Tree<out A> {
         return loop(this, 1, 1)
     }
 
-    fun depthViaFold(): Int = fold({x -> x.val+1},
+    fun depthViaFold(): Int = fold({x -> 1},
         {l,r -> 1 + l + r})
 
     fun <B> map(f: (A) -> B): Tree<B> =
